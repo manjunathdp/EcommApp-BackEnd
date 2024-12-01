@@ -9,13 +9,13 @@ import jakarta.persistence.Id;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long categoryId;
+    private Long categoryId;
     private String categoryName;
 
     public Category() {
     }
 
-    public Category(long categoryId, String categoryName) {
+    public Category(Long categoryId, String categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
