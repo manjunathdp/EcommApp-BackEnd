@@ -25,14 +25,26 @@ public class CategoryServiceImp implements CategoryService {
         return categoryRepository.findAll();
     }
 
+//    @Override
+//    public String createCategory(Category category) {
+//        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+//        if (savedCategory != null) {
+//            throw new APIException("Category with name "+category.getCategoryName()+" already Exists");
+//        }
+//        category.setCategoryId(id++);
+//        categoryRepository.save(category);
+//        return "Category Added Successfully";
+//
+//    }
+
     @Override
-    public void createCategory(Category category) {
+    public String createCategory(Category category) {
         Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
         if (savedCategory != null) {
-            throw new APIException("Category with name "+category.getCategoryName()+" already Exists");
+            throw new APIException("Category with name " + category.getCategoryName() + " already Exists");
         }
-        category.setCategoryId(id++);
         categoryRepository.save(category);
+        return "Category Added Successfully";
     }
 
     @Override
@@ -51,13 +63,15 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public String updateCategory(Category category, long id) {
+
+        // Find the category to update
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId",id));
+
         Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
         if (savedCategory != null) {
             throw new APIException("Category with name "+category.getCategoryName()+" already Exists");
         }
-        // Find the category to update
-        Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId",id));
 
         // Update the category's fields
         existingCategory.setCategoryName(category.getCategoryName());
