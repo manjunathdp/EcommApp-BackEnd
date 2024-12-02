@@ -1,11 +1,10 @@
 package com.ecommerce.project.services;
 
+import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.models.Category;
 import com.ecommerce.project.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -33,7 +32,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = categoryList.stream()
                 .filter(c -> c.getCategoryId() == id)
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with CategoryId: " + id + " not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId",id));
 
         categoryRepository.delete(category);
         return "Category with CategoryId: " + id + " is Deleted Successfully";
@@ -45,7 +44,7 @@ public class CategoryServiceImp implements CategoryService {
     public String updateCategory(Category category, long id) {
         // Find the category to update
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with CategoryId: " + id + " not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId",id));
 
         // Update the category's fields
         existingCategory.setCategoryName(category.getCategoryName());
