@@ -11,8 +11,7 @@ import java.util.*;
 
 @Service
 public class CategoryServiceImp implements CategoryService {
-    //private List<Category> categoryList = new ArrayList<>();
-    private long id = 1;
+
     @Autowired
     CategoryRepository categoryRepository;
 
@@ -25,17 +24,7 @@ public class CategoryServiceImp implements CategoryService {
         return categoryRepository.findAll();
     }
 
-//    @Override
-//    public String createCategory(Category category) {
-//        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
-//        if (savedCategory != null) {
-//            throw new APIException("Category with name "+category.getCategoryName()+" already Exists");
-//        }
-//        category.setCategoryId(id++);
-//        categoryRepository.save(category);
-//        return "Category Added Successfully";
-//
-//    }
+
 
     @Override
     public String createCategory(Category category) {
