@@ -18,6 +18,10 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<Category> getCategoryList() {
+        var categories = categoryRepository.findAll();
+        if (categories.isEmpty()) {
+            throw new APIException("Categories Not Added Yet!!!!!!!! ");
+        }
         return categoryRepository.findAll();
     }
 
