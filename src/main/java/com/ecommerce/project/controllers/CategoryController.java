@@ -1,12 +1,13 @@
 package com.ecommerce.project.controllers;
 
 import com.ecommerce.project.models.Category;
+import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
 
 @RestController
 @RequestMapping("/api")
@@ -21,8 +22,8 @@ public class CategoryController {
 
 
     @GetMapping("/public/categories")
-    public List<Category> getCategoryList() {
-        return categoryService.getCategoryList();
+    public ResponseEntity<CategoryResponse> getCategoryList() {
+        return ResponseEntity.ok(categoryService.getCategoryList());
     }
 
 
