@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 public interface CategoryService {
-    public CategoryResponse getCategoryList(Integer pageNumber, Integer pageSize);
+    public CategoryResponse getCategoryList(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
     public CategoryDTO createCategory(CategoryDTO categoryDTO);
 

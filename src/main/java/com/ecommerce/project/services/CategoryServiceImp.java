@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.*;
 
 @Service
@@ -25,8 +27,12 @@ public class CategoryServiceImp implements CategoryService {
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getCategoryList(Integer pageNumber,Integer pageSize) {
-        Pageable pageDetails = PageRequest.of(pageNumber,pageSize);
+    public CategoryResponse getCategoryList(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder
+                .equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
         var categories = categoryPage.getContent();
         if (categories.isEmpty()) {
@@ -49,13 +55,13 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        Category category = modelMapper.map(categoryDTO,Category.class);
+        Category category = modelMapper.map(categoryDTO, Category.class);
         Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
         if (savedCategory != null) {
             throw new APIException("Category with name " + category.getCategoryName() + " already Exists");
         }
-        Category categoryFromDB=categoryRepository.save(category);
-        return modelMapper.map(categoryFromDB,CategoryDTO.class);
+        Category categoryFromDB = categoryRepository.save(category);
+        return modelMapper.map(categoryFromDB, CategoryDTO.class);
     }
 
     @Override
@@ -90,7 +96,7 @@ public class CategoryServiceImp implements CategoryService {
         existingCategory.setCategoryName(category.getCategoryName());
 
         // Save the updated category to the repository and return the CategoryDTO object
-        return modelMapper.map(categoryRepository.save(existingCategory),CategoryDTO.class);
+        return modelMapper.map(categoryRepository.save(existingCategory), CategoryDTO.class);
 
     }
 
