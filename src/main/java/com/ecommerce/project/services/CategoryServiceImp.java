@@ -49,7 +49,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(long id) {
+    public CategoryDTO deleteCategory(long id) {
         List<Category> categoryList = categoryRepository.findAll();
         Category category = categoryList.stream()
                 .filter(c -> c.getCategoryId() == id)
@@ -57,7 +57,8 @@ public class CategoryServiceImp implements CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", id));
 
         categoryRepository.delete(category);
-        return "Category with CategoryId: " + id + " is Deleted Successfully";
+        return modelMapper.map(category, CategoryDTO.class);
+        //return "Category with CategoryId: " + id + " is Deleted Successfully";
 
 
     }
