@@ -11,7 +11,7 @@ import java.util.*;
 
 public interface CategoryService {
     public CategoryResponse getCategoryList();
-    public String createCategory(CategoryDTO categoryDTO);
+    public CategoryDTO createCategory(CategoryDTO categoryDTO);
 
     public String deleteCategory(long id);
     public String updateCategory( Category category , long id);

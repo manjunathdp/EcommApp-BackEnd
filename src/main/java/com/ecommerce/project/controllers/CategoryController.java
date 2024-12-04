@@ -6,6 +6,7 @@ import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +30,9 @@ public class CategoryController {
 
 
     @PostMapping("/admin/category")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        //categoryService.createCategory(category);
-        return ResponseEntity.ok(categoryService.createCategory(categoryDTO));
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryDTO));
+
     }
 
     @DeleteMapping("/admin/category/{id}")
