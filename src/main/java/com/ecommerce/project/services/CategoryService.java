@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 public interface CategoryService {
-    public CategoryResponse getCategoryList();
+    public CategoryResponse getCategoryList(Integer pageNumber, Integer pageSize);
+
     public CategoryDTO createCategory(CategoryDTO categoryDTO);
 
     public CategoryDTO deleteCategory(long id);
-    public CategoryDTO updateCategory( CategoryDTO categoryDTO , long id);
+
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, long id);
 }

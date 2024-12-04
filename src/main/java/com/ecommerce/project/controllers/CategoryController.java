@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.ecommerce.project.config.AppConstants.*;
+
 
 @RestController
 @RequestMapping("/api")
@@ -24,8 +26,9 @@ public class CategoryController {
 
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponse> getCategoryList() {
-        return ResponseEntity.ok(categoryService.getCategoryList());
+    public ResponseEntity<CategoryResponse> getCategoryList(@RequestParam(name = "pageNumber", defaultValue = DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,
+                                                            @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) Integer pageSize) {
+        return ResponseEntity.ok(categoryService.getCategoryList(pageNumber,pageSize));
     }
 
 
