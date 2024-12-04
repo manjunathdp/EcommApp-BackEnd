@@ -44,8 +44,8 @@ public class CategoryServiceImp implements CategoryService {
         if (savedCategory != null) {
             throw new APIException("Category with name " + category.getCategoryName() + " already Exists");
         }
-        categoryRepository.save(category);
-        return categoryDTO;
+        Category categoryFromDB=categoryRepository.save(category);
+        return modelMapper.map(categoryFromDB,CategoryDTO.class);
     }
 
     @Override
