@@ -63,7 +63,8 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public String updateCategory(Category category, long id) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, long id) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
 
         // Find the category to update
         Category existingCategory = categoryRepository.findById(id)
@@ -77,11 +78,9 @@ public class CategoryServiceImp implements CategoryService {
         // Update the category's fields
         existingCategory.setCategoryName(category.getCategoryName());
 
+        // Save the updated category to the repository and return the CategoryDTO object
+        return modelMapper.map(categoryRepository.save(existingCategory),CategoryDTO.class);
 
-        // Save the updated category to the repository
-        categoryRepository.save(existingCategory);
-
-        return "Category with CategoryId: " + id + " is Updated Successfully";
     }
 
 }
