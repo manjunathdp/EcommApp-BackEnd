@@ -26,13 +26,13 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ProductDTO addProduct(Long categoryId, Product product) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new ResourceNotFoundException("Category","categoryId",categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         product.setImage("default.png");
         product.setCategory(category);
-        double specialPrice = product.getPrice() - ((product.getDiscount()*0.01)*product.getPrice());
+        double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
         product.setSpecialPrice(specialPrice);
-        Product savedProduct=productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
         return modelMapper.map(savedProduct, ProductDTO.class);
     }
 
@@ -43,7 +43,23 @@ public class ProductServiceImp implements ProductService {
             throw new APIException("Products Not yest added");
         }
         List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product,ProductDTO.class))
+                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .toList();
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDTOS);
+        return productResponse;
+    }
+
+    @Override
+    public ProductResponse getAllProductsByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
+        List<Product> products = productRepository.findByCategoryOrderByPriceAsc(category);
+        if (products.isEmpty()) {
+            throw new APIException("Products Not yest added to the category : " + category.getCategoryName() + " with categoryId : " + category.getCategoryId());
+        }
+        List<ProductDTO> productDTOS = products.stream()
+                .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
