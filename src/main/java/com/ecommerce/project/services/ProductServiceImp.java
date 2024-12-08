@@ -32,6 +32,16 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
+
+        Product productCheck = productRepository.findByProductNameIgnoreCase(productDTO.getProductName());
+
+
+        if (productCheck != null) {
+            throw new APIException("Product with productName: " + productDTO.getProductName() + " is already exists");
+
+        }
+
+
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         Product product = modelMapper.map(productDTO, Product.class);
