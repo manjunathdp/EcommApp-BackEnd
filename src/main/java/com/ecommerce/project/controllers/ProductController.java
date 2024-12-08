@@ -12,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.ecommerce.project.config.AppConstants.*;
+import static com.ecommerce.project.config.AppConstants.DEFAULT_SORT_ORDER;
+
 @RestController
 @RequestMapping("/api")
 public class ProductController {
@@ -26,8 +29,11 @@ public class ProductController {
     }
 
     @GetMapping("/public/products")
-    public ResponseEntity<ProductResponse> getAllProducts() {
-        ProductResponse productResponse = productService.getAllProducts();
+    public ResponseEntity<ProductResponse> getAllProducts(@RequestParam(name = "pageNumber", defaultValue = DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,
+                                                          @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) Integer pageSize,
+                                                          @RequestParam(name = "sortBy", defaultValue = DEFAULT_SORT_BY_PRODUCT_ID, required = false) String sortBy,
+                                                          @RequestParam(name = "sortOrder", defaultValue = DEFAULT_SORT_ORDER, required = false) String sortOrder) {
+        ProductResponse productResponse = productService.getAllProducts(pageNumber,pageSize,sortBy,sortOrder);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 

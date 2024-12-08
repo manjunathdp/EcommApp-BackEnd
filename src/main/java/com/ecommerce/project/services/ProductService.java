@@ -10,8 +10,6 @@ import java.io.IOException;
 public interface ProductService {
     ProductDTO addProduct(Long categoryId, ProductDTO productDTO);
 
-    ProductResponse getAllProducts();
-
     ProductResponse getAllProductsByCategory(Long categoryId);
 
     ProductResponse getAllProductsByKeyword(String keyword);
@@ -21,4 +19,6 @@ public interface ProductService {
     ProductDTO deleteProduct(Long productId);
 
     ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException;
+
+    ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 }
