@@ -4,8 +4,6 @@ import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.models.Category;
 import com.ecommerce.project.models.Product;
-import com.ecommerce.project.payload.CategoryDTO;
-import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.repositories.CategoryRepository;
@@ -90,16 +88,35 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProductsByCategory(Long categoryId) {
+    public ProductResponse getAllProductsByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
-        List<Product> products = productRepository.findByCategoryOrderByPriceAsc(category);
+
+
+        Sort sortByAndOrder = sortOrder
+                .equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Product> productPage = productRepository.findByCategoryOrderByPriceAsc(category,pageDetails);
+        var products = productPage.getContent();
         if (products.isEmpty()) {
             throw new APIException("Products Not yest added to the category : " + category.getCategoryName() + " with categoryId : " + category.getCategoryId());
         }
-        List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
+        List<ProductDTO> productDTOS = products.stream()
+                .map(product -> modelMapper
+                        .map(product, ProductDTO.class))
+                .toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(productPage.getNumber());
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPage(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
         return productResponse;
+
+
+
     }
 
     @Override
