@@ -97,7 +97,7 @@ public class ProductServiceImp implements ProductService {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<Product> productPage = productRepository.findByCategoryOrderByPriceAsc(category,pageDetails);
+        Page<Product> productPage = productRepository.findByCategoryOrderByPriceAsc(category, pageDetails);
         var products = productPage.getContent();
         if (products.isEmpty()) {
             throw new APIException("Products Not yest added to the category : " + category.getCategoryName() + " with categoryId : " + category.getCategoryId());
@@ -116,19 +116,35 @@ public class ProductServiceImp implements ProductService {
         return productResponse;
 
 
-
     }
 
     @Override
-    public ProductResponse getAllProductsByKeyword(String keyword) {
-        List<Product> products = productRepository.findByProductNameLikeIgnoreCase('%' + keyword + '%');
+    public ProductResponse getAllProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+
+
+        Sort sortByAndOrder = sortOrder
+                .equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Product> productPage = productRepository.findByProductNameLikeIgnoreCase('%' + keyword + '%', pageDetails);
+        var products = productPage.getContent();
         if (products.isEmpty()) {
             throw new APIException("Products Not found with keyword: " + keyword);
         }
-        List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
+        List<ProductDTO> productDTOS = products.stream()
+                .map(product -> modelMapper
+                        .map(product, ProductDTO.class))
+                .toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(productPage.getNumber());
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPage(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
         return productResponse;
+
     }
 
     @Override
