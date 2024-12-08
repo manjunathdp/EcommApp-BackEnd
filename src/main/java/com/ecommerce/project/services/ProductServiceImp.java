@@ -10,29 +10,29 @@ import com.ecommerce.project.repositories.CategoryRepository;
 import com.ecommerce.project.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductServiceImp implements ProductService {
+    @Value("${project.image}")
+    private String path;
     @Autowired
     ProductRepository productRepository;
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    ImageUploadService imageUploadService;
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         Product product = modelMapper.map(productDTO, Product.class);
 
@@ -50,9 +50,7 @@ public class ProductServiceImp implements ProductService {
         if (products.isEmpty()) {
             throw new APIException("Products Not yest added");
         }
-        List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
-                .toList();
+        List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
         return productResponse;
@@ -60,15 +58,12 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ProductResponse getAllProductsByCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         List<Product> products = productRepository.findByCategoryOrderByPriceAsc(category);
         if (products.isEmpty()) {
             throw new APIException("Products Not yest added to the category : " + category.getCategoryName() + " with categoryId : " + category.getCategoryId());
         }
-        List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
-                .toList();
+        List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
         return productResponse;
@@ -80,9 +75,7 @@ public class ProductServiceImp implements ProductService {
         if (products.isEmpty()) {
             throw new APIException("Products Not found with keyword: " + keyword);
         }
-        List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
-                .toList();
+        List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
         return productResponse;
@@ -90,8 +83,7 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        Product productFromDB = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        Product productFromDB = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
         Product product = modelMapper.map(productDTO, Product.class);
 
@@ -114,8 +106,7 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ProductDTO deleteProduct(Long productId) {
-        Product productFromDB = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        Product productFromDB = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
         productRepository.delete(productFromDB);
 
@@ -125,12 +116,11 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
 
-        Product productFromDB = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        Product productFromDB = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
-        String path = "images";
+        //String path = "images";
 
-        String fileName = uploadImage(path, image);
+        String fileName = imageUploadService.uploadImage(path, image);
 
         productFromDB.setImage(fileName);
 
@@ -140,17 +130,5 @@ public class ProductServiceImp implements ProductService {
 
     }
 
-    private String uploadImage(String path, MultipartFile image) throws IOException {
-        String originalFileName = image.getOriginalFilename();
-        String randomId = UUID.randomUUID().toString();
-        //assert originalFileName != null;
-        String imageName = randomId.concat(originalFileName.substring(originalFileName.lastIndexOf('.')));
-        String imagePath = path + File.separator + imageName;
-        File folder = new File(path);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        Files.copy(image.getInputStream(), Paths.get(imagePath));
-        return imageName;
-    }
+
 }
