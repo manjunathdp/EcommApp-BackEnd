@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 @Table(name = "addresses")
 public class Address {
     @Id
@@ -45,6 +47,7 @@ public class Address {
     @Size(min = 5, message = "pincode name should be at least 5 characters")
     String pincode;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "addresses")
     List<User> users = new ArrayList<>();
 
