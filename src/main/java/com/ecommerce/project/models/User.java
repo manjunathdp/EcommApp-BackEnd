@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email")})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class User {
 
     @NotBlank
     @Size(max = 20)
-    private String userName;
+    private String username;
 
     @Email
     @Size(max = 50)
@@ -33,8 +33,8 @@ public class User {
     @NotBlank
     private String password;
 
-    public User(String userName, String email, String password) {
-        this.userName = userName;
+    public User(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
     }
