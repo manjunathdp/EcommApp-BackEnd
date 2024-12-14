@@ -183,7 +183,7 @@ public class ProductServiceImp implements ProductService {
 
             return cartDTO;
 
-        }).collect(Collectors.toList());
+        }).toList();
 
         cartDTOs.forEach(cart -> cartService.updateProductInCarts(cart.getCartId(), productId));
 
