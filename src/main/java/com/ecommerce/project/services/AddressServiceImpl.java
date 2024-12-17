@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddressServiceImpl implements AddressService{
+public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
@@ -50,7 +50,7 @@ public class AddressServiceImpl implements AddressService{
     public AddressDTO getAddressById(Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
-        return modelMapper.map(address,AddressDTO.class);
+        return modelMapper.map(address, AddressDTO.class);
     }
 
     @Override
@@ -76,6 +76,20 @@ public class AddressServiceImpl implements AddressService{
         user.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
         user.getAddresses().add(updatedAddress);
         userRepository.save(user);
-        return modelMapper.map(updatedAddress,AddressDTO.class);
+        return modelMapper.map(updatedAddress, AddressDTO.class);
+    }
+
+    @Override
+    public String deleteAddressById(Long addressId) {
+        Address addressFromDB = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+
+        User user = addressFromDB.getUser();
+        user.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
+        userRepository.save(user);
+        addressRepository.deleteById(addressId);
+
+
+        return "Address with addressId: " + addressId + " deleted successfully";
     }
 }

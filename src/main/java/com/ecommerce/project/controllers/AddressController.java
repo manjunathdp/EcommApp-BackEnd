@@ -50,7 +50,13 @@ public class AddressController {
 
     @PutMapping("/addresses/{addressId}")
     public ResponseEntity<AddressDTO> updateAddressById(@Valid @RequestBody AddressDTO addressDTO, @PathVariable Long addressId) {
-        AddressDTO address = addressService.updateAddressById(addressId,addressDTO);
+        AddressDTO address = addressService.updateAddressById(addressId, addressDTO);
         return new ResponseEntity<>(address, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/addresses/{addressId}")
+    public ResponseEntity<String> DeleteAddressById(@PathVariable Long addressId) {
+        String status = addressService.deleteAddressById(addressId);
+        return new ResponseEntity<>(status, HttpStatus.OK);
     }
 }
