@@ -1,5 +1,6 @@
 package com.ecommerce.project.services;
 
+import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.models.Address;
 import com.ecommerce.project.models.User;
 import com.ecommerce.project.payload.AddressDTO;
@@ -15,10 +16,10 @@ import java.util.List;
 @Service
 public class AddressServiceImpl implements AddressService{
     @Autowired
-    private AddressRepository addressRepo;
+    private AddressRepository addressRepository;
 
     @Autowired
-    private UserRepository userRepo;
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -33,7 +34,22 @@ public class AddressServiceImpl implements AddressService{
         List<Address> addressesList = user.getAddresses();
         addressesList.add(address);
         user.setAddresses(addressesList);
-        Address savedAddress = addressRepo.save(address);
+        Address savedAddress = addressRepository.save(address);
         return modelMapper.map(savedAddress, AddressDTO.class);
+    }
+
+    @Override
+    public List<AddressDTO> getAddresses() {
+        List<Address> addresses = addressRepository.findAll();
+        return addresses.stream()
+                .map(address -> modelMapper.map(address, AddressDTO.class))
+                .toList();
+    }
+
+    @Override
+    public AddressDTO getAddressById(Long addressId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+        return modelMapper.map(address,AddressDTO.class);
     }
 }
