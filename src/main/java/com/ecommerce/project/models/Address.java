@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,10 +44,10 @@ public class Address {
     @Size(min = 5, message = "pincode name should be at least 5 characters")
     String pincode;
 
-    @ToString.Exclude
+
     @ManyToOne
     @JoinColumn(name = "user_id")
-    List<User> users = new ArrayList<>();
+    User user;
 
     public Address(String street, String buildingName, String state, String city, String country, String pincode) {
         this.street = street;
