@@ -189,6 +189,7 @@ public class ProductServiceImp implements ProductService {
 
         return modelMapper.map(savedProduct, ProductDTO.class);
     }
+
     @Override
     public ProductDTO deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
@@ -201,6 +202,7 @@ public class ProductServiceImp implements ProductService {
         productRepository.delete(product);
         return modelMapper.map(product, ProductDTO.class);
     }
+
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
 
