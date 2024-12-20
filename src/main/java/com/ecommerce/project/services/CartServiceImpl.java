@@ -94,15 +94,19 @@ public class CartServiceImpl implements CartService{
     public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
 
-        if (carts.isEmpty()) {
+        if (carts.size() == 0) {
             throw new APIException("No cart exists");
         }
 
         List<CartDTO> cartDTOs = carts.stream().map(cart -> {
             CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
 
-            List<ProductDTO> products = cart.getCartItems().stream()
-                    .map(p -> modelMapper.map(p.getProduct(), ProductDTO.class)).collect(Collectors.toList());
+            List<ProductDTO> products = cart.getCartItems().stream().map(cartItem -> {
+                ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
+                productDTO.setQuantity(cartItem.getQuantity()); // Set the quantity from CartItem
+                return productDTO;
+            }).collect(Collectors.toList());
+
 
             cartDTO.setProducts(products);
 
@@ -111,20 +115,6 @@ public class CartServiceImpl implements CartService{
         }).collect(Collectors.toList());
 
         return cartDTOs;
-    }
-
-    private Cart createCart() {
-        Cart userCart  = cartRepository.findCartByEmail(authUtil.loggedInEmail());
-        if(userCart != null){
-            return userCart;
-        }
-
-        Cart cart = new Cart();
-        cart.setTotalPrice(0.00);
-        cart.setUser(authUtil.loggedInUser());
-        Cart newCart =  cartRepository.save(cart);
-
-        return newCart;
     }
 
     @Override
@@ -213,6 +203,21 @@ public class CartServiceImpl implements CartService{
     }
 
 
+    private Cart createCart() {
+        Cart userCart  = cartRepository.findCartByEmail(authUtil.loggedInEmail());
+        if(userCart != null){
+            return userCart;
+        }
+
+        Cart cart = new Cart();
+        cart.setTotalPrice(0.00);
+        cart.setUser(authUtil.loggedInUser());
+        Cart newCart =  cartRepository.save(cart);
+
+        return newCart;
+    }
+
+
     @Transactional
     @Override
     public String deleteProductFromCart(Long cartId, Long productId) {
@@ -232,6 +237,8 @@ public class CartServiceImpl implements CartService{
 
         return "Product " + cartItem.getProduct().getProductName() + " removed from the cart !!!";
     }
+
+
     @Override
     public void updateProductInCarts(Long cartId, Long productId) {
         Cart cart = cartRepository.findById(cartId)
@@ -254,6 +261,7 @@ public class CartServiceImpl implements CartService{
         cart.setTotalPrice(cartPrice
                 + (cartItem.getProductPrice() * cartItem.getQuantity()));
 
-        cartItemRepository.save(cartItem);
+        cartItem = cartItemRepository.save(cartItem);
     }
+
 }
